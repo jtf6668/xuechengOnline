@@ -13,7 +13,7 @@ import org.springframework.web.filter.CorsFilter;
  * @date 2023/2/12 11:27
  */
 @Configuration
-public class GlobalCorsConfig {
+public class GlobalCorsConfig {//定义cors过滤器，解决cors过滤问题
 
     @Bean
     public CorsFilter corsFilter() {
