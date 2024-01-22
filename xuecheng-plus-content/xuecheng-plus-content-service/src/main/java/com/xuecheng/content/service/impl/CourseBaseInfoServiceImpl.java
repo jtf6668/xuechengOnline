@@ -140,8 +140,10 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         return courseBaseInfo;
     }
 
+
+
     //查询完整的课程信息，包括基本信息和营销信息
-    public CourseBaseInfoDto getCourseBaseInfo(long courseId){
+    public CourseBaseInfoDto getCourseBaseInfo(Long courseId){
 
         //从课程基本信息表查询
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
@@ -159,7 +161,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         }
 
         //通过courseCategoryMapper查询分类信息，将分类名称放在courseBaseInfoDto对象
-        //todo：课程分类的名称设置到courseBaseInfoDto
+        //课程分类的名称设置到courseBaseInfoDto
         CourseCategory courseCategoryBySt = courseCategoryMapper.selectById(courseBase.getSt());
         courseBaseInfoDto.setStName(courseCategoryBySt.getName());
         CourseCategory courseCategoryByMt = courseCategoryMapper.selectById(courseBase.getMt());

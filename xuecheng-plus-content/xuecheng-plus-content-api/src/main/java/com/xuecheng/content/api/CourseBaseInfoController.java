@@ -13,10 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,5 +47,12 @@ public class CourseBaseInfoController {
 
         CourseBaseInfoDto courseBase = courseBaseInfoService.createCourseBase(companyId, addCourseDto);
         return courseBase;
+    }
+
+    @ApiOperation("根据课程id查询接口")
+    @PostMapping("/course/{courseId}")
+    public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId){
+        CourseBaseInfoDto courseBaseInfo = courseBaseInfoService.getCourseBaseInfo(courseId);
+        return courseBaseInfo;
     }
 }

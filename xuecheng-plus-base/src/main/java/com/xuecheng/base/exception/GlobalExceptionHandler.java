@@ -53,7 +53,11 @@ public class GlobalExceptionHandler {
     return restErrorResponse;
    }
 
-
+    /**
+     * jsr303校验异常报错的捕获
+     * @param e
+     * @return
+     */
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
