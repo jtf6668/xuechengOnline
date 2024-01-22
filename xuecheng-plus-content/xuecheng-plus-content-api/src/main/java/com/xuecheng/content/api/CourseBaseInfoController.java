@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +44,7 @@ public class CourseBaseInfoController {
 
     @ApiOperation("新增课程")
     @PostMapping("/course")
-    public CourseBaseInfoDto courseBaseInfoDto(@RequestBody AddCourseDto addCourseDto){
+    public CourseBaseInfoDto courseBaseInfoDto(@RequestBody @Validated AddCourseDto addCourseDto){
         //获取用户所属机构id
         Long companyId = 1232141425L;
 
