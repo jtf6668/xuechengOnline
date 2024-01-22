@@ -41,4 +41,13 @@ public class CourseBaseInfoController {
         return courseBasePageResult;
     }
 
+    @ApiOperation("新增课程")
+    @PostMapping("/course")
+    public CourseBaseInfoDto courseBaseInfoDto(@RequestBody AddCourseDto addCourseDto){
+        //获取用户所属机构id
+        Long companyId = 1232141425L;
+
+        CourseBaseInfoDto courseBase = courseBaseInfoService.createCourseBase(companyId, addCourseDto);
+        return courseBase;
+    }
 }
