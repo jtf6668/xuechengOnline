@@ -4,8 +4,10 @@ import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.model.dto.AddCourseDto;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
+import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * @author Mr.M
@@ -37,4 +39,12 @@ public interface CourseBaseInfoService {
      * @return
      */
     public CourseBaseInfoDto getCourseBaseInfo(Long courseId);
+
+    /**
+     * 修改课程信息
+     * @param companyId 机构id
+     * @param editCourseDto  修改课程的信息
+     * @return
+     */
+    public CourseBaseInfoDto updateCourseBase(Long companyId, EditCourseDto editCourseDto);
 }

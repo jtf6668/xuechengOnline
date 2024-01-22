@@ -10,6 +10,7 @@ import com.xuecheng.content.mapper.CourseCategoryMapper;
 import com.xuecheng.content.mapper.CourseMarketMapper;
 import com.xuecheng.content.model.dto.AddCourseDto;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
+import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.model.po.CourseCategory;
@@ -77,35 +78,6 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
     public CourseBaseInfoDto createCourseBase(Long companyId, AddCourseDto dto) {
 
-        //参数的合法性校验
-        if (StringUtils.isBlank(dto.getName())) {
-            XueChengPlusException.cast("课程名字不能为空");
-        }
-
-        if (StringUtils.isBlank(dto.getMt())) {
-            throw new RuntimeException("课程分类为空");
-        }
-
-        if (StringUtils.isBlank(dto.getSt())) {
-            throw new RuntimeException("课程分类为空");
-        }
-
-        if (StringUtils.isBlank(dto.getGrade())) {
-            throw new RuntimeException("课程等级为空");
-        }
-
-        if (StringUtils.isBlank(dto.getTeachmode())) {
-            throw new RuntimeException("教育模式为空");
-        }
-
-        if (StringUtils.isBlank(dto.getUsers())) {
-            throw new RuntimeException("适应人群为空");
-        }
-
-        if (StringUtils.isBlank(dto.getCharge())) {
-            throw new RuntimeException("收费规则为空");
-        }
-
         //向课程基本信息表course_base写入数据
         CourseBase courseBaseNew = new CourseBase();
         //将传入的页面的参数放到courseBaseNew对象
@@ -169,6 +141,35 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
         return courseBaseInfoDto;
 
+    }
+
+    @Override
+    public CourseBaseInfoDto updateCourseBase(Long companyId, EditCourseDto editCourseDto) {
+        //合法性校验
+        Long courseId = editCourseDto.getCourseId();
+        CourseBase courseBase = courseBaseMapper.selectById(courseId);
+        //如果该id在数据库中不存在
+        if(courseBase == null){
+            XueChengPlusException.cast("课程不存在");
+        }
+        //如果不是本机构修改本机构的信息，则不允许
+        if(!companyId.equals(courseBase.getCompanyId())){
+            XueChengPlusException.cast("本机构只能修改本机构的信息");
+        }
+
+        //封装信息
+        BeanUtils.copyProperties(editCourseDto,courseBase);
+        courseBase.setChangeDate(LocalDateTime.now());
+
+        //更新数据库
+        int i = courseBaseMapper.updateById(courseBase);
+
+        if (i<=0){
+            XueChengPlusException.cast("修改信息失败");
+        }
+
+        //查询课程信息
+        return getCourseBaseInfo(courseId);
     }
 
     //单独写一个方法保存营销信息，逻辑：存在则更新，不存在则添加
