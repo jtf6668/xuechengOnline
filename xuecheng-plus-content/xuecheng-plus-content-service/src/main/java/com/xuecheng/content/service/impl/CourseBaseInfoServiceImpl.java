@@ -106,6 +106,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         courseMarketNew.setId(courseId);
         //保存营销信息
         saveCourseMarket(courseMarketNew);
+
         //从数据库查询课程的详细信息，包括两部分
         CourseBaseInfoDto courseBaseInfo = getCourseBaseInfo(courseId);
 
@@ -146,7 +147,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     @Override
     public CourseBaseInfoDto updateCourseBase(Long companyId, EditCourseDto editCourseDto) {
         //合法性校验
-        Long courseId = editCourseDto.getCourseId();
+        Long courseId = editCourseDto.getId();
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
         //如果该id在数据库中不存在
         if(courseBase == null){
@@ -157,22 +158,30 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
             XueChengPlusException.cast("本机构只能修改本机构的信息");
         }
 
-        //封装信息
+        //封装基本信息
         BeanUtils.copyProperties(editCourseDto,courseBase);
         courseBase.setChangeDate(LocalDateTime.now());
 
-        //更新数据库
+        //更新基本信息数据库
         int i = courseBaseMapper.updateById(courseBase);
 
         if (i<=0){
             XueChengPlusException.cast("修改信息失败");
         }
 
+        //向课程营销系courese_market写入数据
+        CourseMarket courseMarket = new CourseMarket();
+        //将页面输入的数据拷贝到courseMarketNew
+        BeanUtils.copyProperties(editCourseDto,courseMarket);
+        courseMarket.setId(courseId);
+        //保存营销信息
+        saveCourseMarket(courseMarket);
+
         //查询课程信息
         return getCourseBaseInfo(courseId);
     }
 
-    //单独写一个方法保存营销信息，逻辑：存在则更新，不存在则添加
+    //保存营销信息，逻辑：存在则更新，不存在则添加
     private int saveCourseMarket(CourseMarket courseMarket){
         //参数的合法性校验
         String charge = courseMarket.getCharge();

@@ -5,7 +5,6 @@ import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.model.dto.AddCourseDto;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
 import com.xuecheng.content.model.dto.EditCourseDto;
-import com.xuecheng.content.model.dto.EditCourseId;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
@@ -59,7 +58,7 @@ public class CourseBaseInfoController {
     }
 
     @ApiOperation("修改课程")
-    @PostMapping("/course")
+    @PutMapping ("/course")
     public CourseBaseInfoDto modifyCourseBase(@RequestBody @Validated EditCourseDto editCourseId){
         CourseBaseInfoDto courseBaseInfoDto = courseBaseInfoService.updateCourseBase(1232141425L, editCourseId);
         return courseBaseInfoDto;
