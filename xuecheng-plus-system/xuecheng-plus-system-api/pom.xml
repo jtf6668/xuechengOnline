@@ -22,7 +22,17 @@
             <artifactId>xuecheng-plus-system-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
+        <!--nacos的配置-->
+        <!--服务暴露给nacos-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--在nacos上配置-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
         <!--cloud的基础环境包-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
