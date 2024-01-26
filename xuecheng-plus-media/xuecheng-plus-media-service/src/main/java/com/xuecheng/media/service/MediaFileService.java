@@ -28,11 +28,14 @@ public interface MediaFileService {
      */
     public PageResult<MediaFiles> queryMediaFiels(Long companyId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto);
 
- /**
-  * 上传文件
-  * @param companyId 机构id
-  * @param localFilePath 要上传的文件的路径
-  * @return
-  */
- public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto,String localFilePath);
+    /**
+     * 上传文件
+     *
+     * @param companyId     机构id
+     * @param localFilePath 要上传的文件的路径
+     * @return
+     */
+    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath);
+
+    public MediaFiles addMediaFilesToDb(Long companyId,String fileMd5,UploadFileParamsDto uploadFileParamsDto,String bucket,String objectName);
 }

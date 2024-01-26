@@ -51,7 +51,7 @@ public class MediaFilesController {
         uploadFileParamsDto.setFileSize(filedata.getSize());
         //文件类型
         uploadFileParamsDto.setFileType("001001");
-        //创建一个临时文件
+        //创建一个临时文件,例如，如果你调用createTempFile("myTempFile", ".txt")，它可能会创建一个文件名类似于"myTempFile738493829483.txt"的临时文件
         File tempFile = File.createTempFile("minio", ".temp");
         filedata.transferTo(tempFile);
         Long companyId = 1232141425L;

@@ -50,13 +50,16 @@ public class MediaFileServiceImpl implements MediaFileService {
  @Autowired
  MinioClient minioClient;
 
+ @Autowired
+ MediaFileService currentProxy;
+
  //存储普通文件的桶
  @Value("${minio.bucket.files}")
  private String bucket_mediafiles;
 
  //存储视频文件的桶
- @Value("${minio.bucket.vediofiles}")
- private String bucket_vedio;
+ @Value("${minio.bucket.videofiles}")
+ private String bucket_video;
 
  @Override
  public PageResult<MediaFiles> queryMediaFiels(Long companyId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto) {
@@ -78,7 +81,7 @@ public class MediaFileServiceImpl implements MediaFileService {
 
  }
 
- @Transactional
+
  @Override
  public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath) {
 
@@ -105,12 +108,16 @@ public class MediaFileServiceImpl implements MediaFileService {
 
 
   //将文件信息保存到数据库
-  MediaFiles mediaFiles = addMediaFilesToDb(companyId, fileMd5, uploadFileParamsDto, bucket_mediafiles, objectName);
+  MediaFiles mediaFiles = currentProxy.addMediaFilesToDb(companyId, fileMd5, uploadFileParamsDto, bucket_mediafiles, objectName);
   if(mediaFiles==null){
    XueChengPlusException.cast("文件上传后保存信息失败");
   }
-  BeanUtils.copyProperties(mediaFiles,uploadFileParamsDto);
-  return null;
+
+  //准备返回的对象
+  UploadFileResultDto uploadFileResultDto = new UploadFileResultDto();
+  BeanUtils.copyProperties(mediaFiles,uploadFileResultDto);
+
+  return uploadFileResultDto;
  }
 
  /**
