@@ -15,6 +15,7 @@ import com.xuecheng.media.service.MediaFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -103,7 +105,11 @@ public class MediaFileServiceImpl implements MediaFileService {
 
 
   //将文件信息保存到数据库
-
+  MediaFiles mediaFiles = addMediaFilesToDb(companyId, fileMd5, uploadFileParamsDto, bucket_mediafiles, objectName);
+  if(mediaFiles==null){
+   XueChengPlusException.cast("文件上传后保存信息失败");
+  }
+  BeanUtils.copyProperties(mediaFiles,uploadFileParamsDto);
   return null;
  }
 
@@ -175,6 +181,45 @@ public class MediaFileServiceImpl implements MediaFileService {
    mimeType = extensionMatch.getMimeType();
   }
   return mimeType;
+ }
+
+ /**
+  * 将文件信息保存到media的数据库表
+  * @param companyId
+  * @param fileMd5
+  * @param uploadFileParamsDto
+  * @param bucket
+  * @param objectName
+  * @return
+  */
+ @Transactional
+ public MediaFiles addMediaFilesToDb(Long companyId,String fileMd5,UploadFileParamsDto uploadFileParamsDto,String bucket,String objectName){
+  //从数据库查询文件
+  MediaFiles mediaFiles = mediaFilesMapper.selectById(fileMd5);
+  if (mediaFiles == null) {
+   mediaFiles = new MediaFiles();
+   //拷贝基本信息
+   BeanUtils.copyProperties(uploadFileParamsDto, mediaFiles);
+   mediaFiles.setId(fileMd5);
+   mediaFiles.setFileId(fileMd5);
+   mediaFiles.setCompanyId(companyId);
+   mediaFiles.setUrl("/" + bucket + "/" + objectName);
+   mediaFiles.setBucket(bucket);
+   mediaFiles.setFilePath(objectName);
+   mediaFiles.setCreateDate(LocalDateTime.now());
+   mediaFiles.setAuditStatus("002003");
+   mediaFiles.setStatus("1");
+   //保存文件信息到文件表
+   int insert = mediaFilesMapper.insert(mediaFiles);
+   if (insert < 0) {
+    log.error("保存文件信息到数据库失败,{}",mediaFiles.toString());
+    XueChengPlusException.cast("保存文件信息失败");
+   }
+   log.debug("保存文件信息到数据库成功,{}",mediaFiles.toString());
+
+  }
+  return mediaFiles;
+
  }
 
 
