@@ -94,11 +94,12 @@ public class MinioTest {
     @Test
     public void test_checkFile() throws Exception {
         GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                .bucket("vedio")
-                .object("e/d/ed7228b97a6b1040e26548ddc8fcff5f/chunk/")
+                .bucket("mediafiles")
+                .object("e/d/ed7228b97a6b1040e26548ddc8fcff5f/chunk/0")
                 .build();
         System.out.println(getObjectArgs);
         FilterInputStream inputStream = minioClient.getObject(getObjectArgs);
+        System.out.println(inputStream);
     }
 
 

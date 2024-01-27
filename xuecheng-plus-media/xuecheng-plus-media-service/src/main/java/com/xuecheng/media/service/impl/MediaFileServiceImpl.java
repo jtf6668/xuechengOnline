@@ -282,7 +282,7 @@ public class MediaFileServiceImpl implements MediaFileService {
         String chunkFileFolderPath = getChunkFileFolderPath(fileMd5);
 
         GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                .bucket(bucket_video)
+                .bucket("mediafiles")
                 .object(chunkFileFolderPath+chunkIndex)
                 .build();
         //查询远程服务获取到一个流对象
