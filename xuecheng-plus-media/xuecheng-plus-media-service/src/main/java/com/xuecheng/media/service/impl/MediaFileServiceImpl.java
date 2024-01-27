@@ -264,9 +264,33 @@ public class MediaFileServiceImpl implements MediaFileService {
         return RestResponse.success(false);
     }
 
+    /**
+     * 检查分块是否存在
+     * @param fileMd5  文件的md5
+     * @param chunkIndex  分块序号
+     * @return
+     */
     @Override
     public RestResponse<Boolean> checkChunk(String fileMd5, int chunkIndex) {
-        return null;
+        //获取文件分块的路径
+        String chunkFileFolderPath = getChunkFileFolderPath(fileMd5);
+        GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                .bucket(bucket_video)
+                .object(chunkFileFolderPath+chunkIndex)
+                .build();
+        //查询远程服务获取到一个流对象
+        try {
+            FilterInputStream inputStream = minioClient.getObject(getObjectArgs);
+            if(inputStream!=null){
+                //查询到的流不为空，说明分块已经存在，返回给前端文件已经存在
+                return RestResponse.success(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    //文件不存在
+        return RestResponse.success(false);
     }
 
     @Override
@@ -280,7 +304,10 @@ public class MediaFileServiceImpl implements MediaFileService {
     }
 
 
-
+    //得到分块文件的目录
+    private String getChunkFileFolderPath(String fileMd5) {
+        return fileMd5.substring(0, 1) + "/" + fileMd5.substring(1, 2) + "/" + fileMd5 + "/" + "chunk" + "/";
+    }
 
 
 }

@@ -33,7 +33,8 @@ public class BigFilesController {
     public RestResponse<Boolean> checkfile(
             @RequestParam("fileMd5") String fileMd5
     ) throws Exception {
-        return null;
+        RestResponse<Boolean> booleanRestResponse = mediaFileService.checkFile(fileMd5);
+        return booleanRestResponse;
     }
 
 
@@ -41,7 +42,8 @@ public class BigFilesController {
     @PostMapping("/upload/checkchunk")
     public RestResponse<Boolean> checkchunk(@RequestParam("fileMd5") String fileMd5,
                                             @RequestParam("chunk") int chunk) throws Exception {
-        return null;
+        RestResponse<Boolean> booleanRestResponse = mediaFileService.checkChunk(fileMd5, chunk);
+        return booleanRestResponse;
     }
 
     @ApiOperation(value = "上传分块文件")
