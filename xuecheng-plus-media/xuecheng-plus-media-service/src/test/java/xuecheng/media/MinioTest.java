@@ -43,7 +43,7 @@ public class MinioTest {
 
         //上传文件的参数信息
         UploadObjectArgs uploadObjectArgs = UploadObjectArgs.builder()
-                .bucket("testbucket")//桶
+                .bucket("video")//桶
                 .filename("D:\\aaa.txt") //指定本地文件路径,要上传的文件
 //                .object("1.mp4")//对象名 在桶下存储该文件，在桶里面这个文件叫什么名字
                 .object("test/01/1.mp4")//对象名 放在子目录下
@@ -91,6 +91,16 @@ public class MinioTest {
         }
 
     }
+    @Test
+    public void test_checkFile() throws Exception {
+        GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                .bucket("vedio")
+                .object("e/d/ed7228b97a6b1040e26548ddc8fcff5f/chunk/")
+                .build();
+        System.out.println(getObjectArgs);
+        FilterInputStream inputStream = minioClient.getObject(getObjectArgs);
+    }
+
 
 
     //将分块文件上传到minio

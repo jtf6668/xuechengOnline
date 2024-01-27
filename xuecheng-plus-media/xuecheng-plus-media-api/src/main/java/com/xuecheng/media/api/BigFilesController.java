@@ -48,10 +48,16 @@ public class BigFilesController {
 
     @ApiOperation(value = "上传分块文件")
     @PostMapping("/upload/uploadchunk")
-    public RestResponse uploadchunk(@RequestParam("file") MultipartFile file,
+    public RestResponse uploadchunk(@RequestParam("file") MultipartFile file,//这里的file是指分块文件
                                     @RequestParam("fileMd5") String fileMd5,
                                     @RequestParam("chunk") int chunk) throws Exception {
-        return null;
+        //创建一个临时文件,例如，如果你调用createTempFile("myTempFile", ".txt")，它可能会创建一个文件名类似于"myTempFile738493829483.txt"的临时文件
+        File tempFile = File.createTempFile("minio", ".temp");
+        file.transferTo(tempFile);
+        //文件路径
+        String localFilePath = tempFile.getAbsolutePath();
+        RestResponse restResponse = mediaFileService.uploadChunk(fileMd5, chunk, localFilePath);
+        return restResponse;
 
     }
 

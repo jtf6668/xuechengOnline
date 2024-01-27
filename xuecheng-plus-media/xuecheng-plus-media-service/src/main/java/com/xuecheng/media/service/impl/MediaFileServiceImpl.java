@@ -186,7 +186,7 @@ public class MediaFileServiceImpl implements MediaFileService {
     private String getMimeType(String extension) {
 
         if (extension == null) {
-            extension = "";//如果扩展名为空，就给一个空字符串，不然会报空指针异常
+            extension = "";//如果扩展名为空，就给一个空字符串，不然会报空指针异常,如果使用“”，会返回一个未知的扩展名
         }
         //根据扩展名取出mimeType
         ContentInfo extensionMatch = ContentInfoUtil.findExtensionMatch(".mp4");
@@ -240,10 +240,14 @@ public class MediaFileServiceImpl implements MediaFileService {
     @Override
     public RestResponse<Boolean> checkFile(String fileMd5) {
         //先查询是否在数据库中
+        //先查询数据库
         MediaFiles mediaFiles = mediaFilesMapper.selectById(fileMd5);
-        String bucket = mediaFiles.getBucket();//查询回来的文件所在的桶
-        String filePath = mediaFiles.getFilePath();//文件所在的路径
-        if (mediaFiles != null) {//如果数据库返回不为空，什么在数据库中存在，然后去minio看是否存在
+        if(mediaFiles!=null){
+            //桶
+            String bucket = mediaFiles.getBucket();
+            //objectname
+            String filePath = mediaFiles.getFilePath();
+            //如果数据库存在再查询 minio
             GetObjectArgs getObjectArgs = GetObjectArgs.builder()
                     .bucket(bucket)
                     .object(filePath)
@@ -252,12 +256,13 @@ public class MediaFileServiceImpl implements MediaFileService {
             try {
                 FilterInputStream inputStream = minioClient.getObject(getObjectArgs);
                 if(inputStream!=null){
-                    //查询到的流不为空，说明文件已经存在，返回给前端文件已经存在
+                    //文件已存在
                     return RestResponse.success(true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
 
         //文件不存在
@@ -273,7 +278,9 @@ public class MediaFileServiceImpl implements MediaFileService {
     @Override
     public RestResponse<Boolean> checkChunk(String fileMd5, int chunkIndex) {
         //获取文件分块的路径
+        //根据md5得到分块文件所在目录的路径
         String chunkFileFolderPath = getChunkFileFolderPath(fileMd5);
+
         GetObjectArgs getObjectArgs = GetObjectArgs.builder()
                 .bucket(bucket_video)
                 .object(chunkFileFolderPath+chunkIndex)
@@ -282,25 +289,41 @@ public class MediaFileServiceImpl implements MediaFileService {
         try {
             FilterInputStream inputStream = minioClient.getObject(getObjectArgs);
             if(inputStream!=null){
-                //查询到的流不为空，说明分块已经存在，返回给前端文件已经存在
+                //文件已存在
                 return RestResponse.success(true);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return RestResponse.success(false);
         }
 
-    //文件不存在
+        //文件不存在
         return RestResponse.success(false);
     }
 
+    /**
+     *
+     * @param fileMd5  文件md5
+     * @param chunk  分块序号
+     * @param localChunkFilePath  分块文件本地路径,（临时路径）
+     * @return
+     */
     @Override
     public RestResponse uploadChunk(String fileMd5, int chunk, String localChunkFilePath) {
-        return null;
+        //分块文件的路径：md5加上序号
+        String chunkFilePath = getChunkFileFolderPath(fileMd5) + chunk;
+        //媒体类型
+        String mimeType = getMimeType(null);
+        boolean b = addMediaFilesToMinIO(localChunkFilePath, mimeType, bucket_mediafiles, chunkFilePath);
+        if(!b){
+            return RestResponse.validfail(false,"上传文件分块失败");
+        }
+        //上传成功
+        return RestResponse.success(true);
     }
 
     @Override
     public RestResponse mergechunks(Long companyId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto) {
-        return null;
+return null;
     }
 
 
