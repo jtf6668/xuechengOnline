@@ -8,10 +8,12 @@ import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.media.mapper.MediaFilesMapper;
+import com.xuecheng.media.mapper.MediaProcessMapper;
 import com.xuecheng.media.model.dto.QueryMediaParamsDto;
 import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
+import com.xuecheng.media.model.po.MediaProcess;
 import com.xuecheng.media.service.MediaFileService;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
@@ -52,6 +54,8 @@ public class MediaFileServiceImpl implements MediaFileService {
 
     @Autowired
     MediaFilesMapper mediaFilesMapper;
+    @Autowired
+    MediaProcessMapper mediaProcessMapper;
 
     @Autowired
     MinioClient minioClient;
@@ -191,7 +195,7 @@ public class MediaFileServiceImpl implements MediaFileService {
             extension = "";//如果扩展名为空，就给一个空字符串，不然会报空指针异常,如果使用“”，会返回一个未知的扩展名
         }
         //根据扩展名取出mimeType
-        ContentInfo extensionMatch = ContentInfoUtil.findExtensionMatch(".mp4");
+        ContentInfo extensionMatch = ContentInfoUtil.findExtensionMatch(extension);
         String mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;//通用mimeType，字节流
         if (extensionMatch != null) {
             mimeType = extensionMatch.getMimeType();
@@ -235,10 +239,31 @@ public class MediaFileServiceImpl implements MediaFileService {
             log.debug("保存文件信息到数据库成功,{}", mediaFiles.toString());
 
         }
+        //记录待处理任务
+        //判断如果是avi视频写入待处理任务
         return mediaFiles;
 
     }
 
+
+    private void addWaitingTask(MediaFiles mediaFiles){
+        //获取文件的mimeType
+        //文件名称
+        String filename = mediaFiles.getFilename();
+        //文件扩展名
+        String extension = filename.substring(filename.lastIndexOf("."));
+        String mimeType = getMimeType(extension);
+        if(mimeType.equals("video/x-msvideo")){//如果是avi视频就写入待处理任务
+            MediaProcess mediaProcess = new MediaProcess();
+            BeanUtils.copyProperties(mediaFiles,mediaProcess);
+            //状态是未处理
+            mediaProcess.setStatus("1");
+            mediaProcess.setCreateDate(LocalDateTime.now());
+            mediaProcess.setFailCount(0);//失败次数默认0
+            mediaProcess.setUrl(null);
+            mediaProcessMapper.insert(mediaProcess);
+        }
+    }
     @Override
     public RestResponse<Boolean> checkFile(String fileMd5) {
         //先查询是否在数据库中
