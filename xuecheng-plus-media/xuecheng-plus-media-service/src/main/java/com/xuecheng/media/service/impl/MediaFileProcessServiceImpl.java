@@ -17,4 +17,9 @@ public class MediaFileProcessServiceImpl implements MediaFileProcessService {
         List<MediaProcess> mediaProcesses = mediaProcessMapper.selectListByShardIndex(shardTotal, shardIndex, count);
         return mediaProcesses;
     }
+
+    public boolean startTask(long id){
+        int result = mediaProcessMapper.startTask(id);
+        return result <= 0 ? false : true;
+    }
 }
