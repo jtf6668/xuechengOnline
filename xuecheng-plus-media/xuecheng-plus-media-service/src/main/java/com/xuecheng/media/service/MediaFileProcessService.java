@@ -22,4 +22,21 @@ public interface MediaFileProcessService {
      * @date 2022/9/14 14:49
      */
     public List<MediaProcess> getMediaProcessList(int shardIndex, int shardTotal, int count);
+
+    /**
+     * 保存任务结果
+     * @param taskId 任务id
+     * @param status 任务状态
+     * @param fileId 文件id
+     * @param url
+     * @param errorMsg 错误信息
+     */
+    void saveProcessFinishStatus(Long taskId,String status,String fileId,String url,String errorMsg);
+
+    /**
+     * 开启任务，乐观锁抢占任务
+     * @param id
+     * @return
+     */
+    public boolean startTask(long id);
 }
