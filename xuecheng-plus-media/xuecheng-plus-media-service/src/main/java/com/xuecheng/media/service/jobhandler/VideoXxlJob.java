@@ -127,7 +127,7 @@ public class VideoXxlJob {
                     }
 
                     //上传到minio
-                    boolean b1 = mediaFileService.addMediaFilesToMinIO(mp4File.getAbsolutePath(), "video/mp4", bucket, filePath);
+                    boolean b1 = mediaFileService.addMediaFilesToMinIO(mp4File.getAbsolutePath(), "video/mp4", bucket, mp4_name);
                     if (!b1) {
                         log.debug("视频上传minio失败，id:{}", id);
                         //保存错误信息的数据库

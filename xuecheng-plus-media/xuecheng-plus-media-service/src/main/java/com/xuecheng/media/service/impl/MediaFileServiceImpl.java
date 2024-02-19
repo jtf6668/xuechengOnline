@@ -237,10 +237,13 @@ public class MediaFileServiceImpl implements MediaFileService {
                 XueChengPlusException.cast("保存文件信息失败");
             }
             log.debug("保存文件信息到数据库成功,{}", mediaFiles.toString());
+            //记录待处理任务
+            //判断如果是avi视频写入待处理任务
+            addWaitingTask(mediaFiles);
 
+            return mediaFiles;
         }
-        //记录待处理任务
-        //判断如果是avi视频写入待处理任务
+
         return mediaFiles;
 
     }
