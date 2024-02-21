@@ -17,6 +17,8 @@ import com.xuecheng.content.model.po.CoursePublishPre;
 import com.xuecheng.content.service.CourseBaseInfoService;
 import com.xuecheng.content.service.CoursePublishService;
 import com.xuecheng.content.service.TeachplanService;
+import com.xuecheng.messagesdk.model.po.MqMessage;
+import com.xuecheng.messagesdk.service.MqMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -54,7 +56,8 @@ public class CoursePublishServiceImpl implements CoursePublishService {
      @Autowired
      CoursePublishMapper coursePublishMapper;
 
-
+    @Autowired
+    MqMessageService mqMessageService;
 
 
 
@@ -141,10 +144,11 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     public void publish(Long companyId, Long courseId) {
         //查询课程预发布表，把课程预发布表数据放到发布表中
         CoursePublishPre coursePublishPre = coursePublishPreMapper.selectById(courseId);
-        String status = coursePublishPre.getStatus();
         if(coursePublishPre == null){
             XueChengPlusException.cast("课程没有审核记录，无法发布");
         }
+        String status = coursePublishPre.getStatus();
+
         //查询审核状态
         if(!status.equals("202004")){
             XueChengPlusException.cast("课程未通过审核不允许发布");
@@ -158,8 +162,21 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         }else {
             coursePublishMapper.updateById(coursePublish);
         }
+
+        //向消息表写记录
+        saveCoursePublishMessage(courseId);
         //删除预发布表
         coursePublishPreMapper.deleteById(courseId);
     }
 
+    /**
+     * 保存消息表记录
+     * @param courseId
+     */
+    private void saveCoursePublishMessage(Long courseId){
+        MqMessage mq = mqMessageService.addMessage("course_publish", String.valueOf(courseId), null, null);
+        if (mq == null){
+            XueChengPlusException.cast(CommonError.UNKOWN_ERROR);
+        }
+    }
 }
