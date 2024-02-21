@@ -37,5 +37,5 @@ public interface CoursePublishService {
   * @author Mr.M
   * @date 2022/9/20 16:23
   */
-
+public void publish(Long companyId,Long courseId);
 }

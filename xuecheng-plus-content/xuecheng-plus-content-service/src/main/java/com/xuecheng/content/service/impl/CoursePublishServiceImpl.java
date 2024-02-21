@@ -136,7 +136,30 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         courseBaseMapper.updateById(courseBase);
     }
 
-
-
+    @Override
+    @Transactional
+    public void publish(Long companyId, Long courseId) {
+        //查询课程预发布表，把课程预发布表数据放到发布表中
+        CoursePublishPre coursePublishPre = coursePublishPreMapper.selectById(courseId);
+        String status = coursePublishPre.getStatus();
+        if(coursePublishPre == null){
+            XueChengPlusException.cast("课程没有审核记录，无法发布");
+        }
+        //查询审核状态
+        if(!status.equals("202004")){
+            XueChengPlusException.cast("课程未通过审核不允许发布");
+        }
+        //向课程表写入数据
+        CoursePublish coursePublish = new CoursePublish();
+        BeanUtils.copyProperties(coursePublishPre,coursePublish);
+        CoursePublish publish = coursePublishMapper.selectById(courseId);
+        if(publish == null) {
+            coursePublishMapper.insert(coursePublish);
+        }else {
+            coursePublishMapper.updateById(coursePublish);
+        }
+        //删除预发布表
+        coursePublishPreMapper.deleteById(courseId);
+    }
 
 }
