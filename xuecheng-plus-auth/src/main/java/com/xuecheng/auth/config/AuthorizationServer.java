@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import javax.annotation.Resource;
 
 /**
- * @description 授权服务器配置
+ * @description 授权服务器配置，配置授权码
  * @author Mr.M
  * @date 2022/9/26 22:25
  * @version 1.0

@@ -18,7 +18,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 /**
  * @author Mr.M
  * @version 1.0
- * @description 安全管理配置
+ * @description 安全管理配置，配置spring security
  * @date 2022/9/26 20:53
  */
 @EnableWebSecurity
