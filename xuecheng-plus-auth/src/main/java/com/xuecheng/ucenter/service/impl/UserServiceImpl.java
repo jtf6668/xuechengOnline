@@ -1,5 +1,6 @@
 package com.xuecheng.ucenter.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
 import com.xuecheng.ucenter.model.po.XcUser;
@@ -30,7 +31,14 @@ public class UserServiceImpl implements UserDetailsService {
         //用户权限,如果不加报Cannot pass a null GrantedAuthority collection
         String[] authorities= {"test"};
         //创建UserDetails对象,权限信息待实现授权功能时再向UserDetail中加入
-        UserDetails userDetails = User.withUsername(user.getUsername()).password(password).authorities(authorities).build();
+
+        //密码为安全信息，所以不防止jwt中
+        user.setPassword(null);
+        //转成json，然后传递给jwt
+        String userJson = JSON.toJSONString(user);
+
+        //比对用户是否存在已经在前面做了，所以下面这条代码只需要比对密码信息和传递用户信息
+        UserDetails userDetails = User.withUsername(userJson).password(password).authorities(authorities).build();
 
         return userDetails;
     }
