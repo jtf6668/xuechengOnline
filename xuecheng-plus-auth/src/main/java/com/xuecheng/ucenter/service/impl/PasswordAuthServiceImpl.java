@@ -1,6 +1,7 @@
 package com.xuecheng.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xuecheng.ucenter.feignclient.CheckCodeClient;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.model.dto.XcUserExt;
@@ -27,11 +28,17 @@ public class PasswordAuthServiceImpl implements AuthService {
  @Autowired
  PasswordEncoder passwordEncoder;
 
+ @Autowired
+ CheckCodeClient checkCodeClient;
 
  @Override
  public XcUserExt execute(AuthParamsDto authParamsDto) {
   //账号
   String username = authParamsDto.getUsername();
+  //验证码
+  String checkcode = authParamsDto.getCheckcode();
+  //验证码对应的key
+  String checkcodekey = authParamsDto.getCheckcodekey();
 
   //账号是否存在
   //根据username账号查询数据库
@@ -40,6 +47,19 @@ public class PasswordAuthServiceImpl implements AuthService {
   //查询到用户不存在，要返回null即可，spring security框架抛出异常用户不存在
   if (xcUser == null) {
    throw new RuntimeException("账号不存在");
+  }
+
+  //如果验证码为空
+  if(StringUtils.isEmpty(checkcode) || StringUtils.isEmpty(checkcodekey)){
+   throw new RuntimeException("请输入的验证码");
+  }
+
+  //远程调用验证码服务接口校验验证码
+  Boolean verify = checkCodeClient.verify(checkcodekey, checkcode);
+
+  //null的情况时熔断的降级处理
+  if (verify == null || !verify){
+   throw new RuntimeException("验证码输入错误");
   }
 
   //验证密码是否正确
