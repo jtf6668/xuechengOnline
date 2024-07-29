@@ -93,12 +93,10 @@ public class VideoXxlJob {
                         return;
                     }
 
-
                     //下载的avi视频的路径
                     String video_path = file.getAbsolutePath();
                     //转换后mp4的名称
                     String mp4_name = fileId + ".mp4";
-
 
                     //创建一个临时文件，作为将avi转换成mp4的文件
                     File mp4File = null;

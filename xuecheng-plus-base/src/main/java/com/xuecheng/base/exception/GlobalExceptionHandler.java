@@ -50,6 +50,9 @@ public class GlobalExceptionHandler {
 
     //解析出异常信息
     RestErrorResponse restErrorResponse = new RestErrorResponse(CommonError.UNKOWN_ERROR.getErrMessage());
+       if(e.getMessage().equals("不允许访问")){
+           return new RestErrorResponse("没有操作此功能的权限");
+       }
     return restErrorResponse;
    }
 

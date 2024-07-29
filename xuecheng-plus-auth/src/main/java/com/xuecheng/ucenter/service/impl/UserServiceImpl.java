@@ -27,6 +27,10 @@ public class UserServiceImpl implements UserDetailsService {
     @Autowired
     ApplicationContext applicationContext;//通过它来获取在配置文件中定义的各种Bean（组件）
     @Override
+
+    //此时发送的信息是下面这样的，s为"stu1","authType":"password"
+    // POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=password&username=
+    // {"username":"stu1","authType":"password","password":"111111"}
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         //将传入的json转成AuthParamsDto对象
         AuthParamsDto authParamsDto = null;

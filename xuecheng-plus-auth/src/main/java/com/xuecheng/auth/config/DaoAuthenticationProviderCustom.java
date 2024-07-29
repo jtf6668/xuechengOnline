@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
  * @description 重写了DaoAuthenticationProvider的校验的密码的方法，因为我们统一认证入口，有一些认证方式不需要校验密码
  * @date 2023/2/24 11:40
  */
+//本来是在这个类校验由userDetail（数据库结果传来的账号和密码)跟客户端的是否匹配，这里取消掉
 @Component
 public class DaoAuthenticationProviderCustom extends DaoAuthenticationProvider {
 
@@ -24,7 +25,7 @@ public class DaoAuthenticationProviderCustom extends DaoAuthenticationProvider {
  }
 
  /**
-  * 重写校验密码，有些认证方式不需要密码，所以不写
+  * 重写校验密码，有些认证方式不需要密码，所以不写，即屏蔽密码对比
   * @param userDetails
   * @param authentication
   * @throws AuthenticationException

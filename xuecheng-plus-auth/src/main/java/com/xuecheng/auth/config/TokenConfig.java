@@ -33,21 +33,26 @@ public class TokenConfig {
 //    }
 
     @Autowired
-    private JwtAccessTokenConverter accessTokenConverter;
+    private JwtAccessTokenConverter accessTokenConverter;//用于将令牌编码成 JWT 并进行验证
 
     @Bean
     public TokenStore tokenStore() {
         return new JwtTokenStore(accessTokenConverter());
-    }
+    }//返回的是 JwtTokenStore 对象，并将 JwtAccessTokenConverter 注入其中
 
     @Bean
+    //定义了一个名为 accessTokenConverter 的 Bean，配置 JwtAccessTokenConverter 对象并设置签名密钥。
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey(SIGNING_KEY);
         return converter;
     }
 
-    //令牌管理服务
+    //用于管理令牌的生成和存储。
+    //
+    //设置支持刷新令牌，设置令牌存储策略为之前定义的 TokenStore。
+    //创建 TokenEnhancerChain 对象，将 JwtAccessTokenConverter 加入其中作为 TokenEnhancer。
+    //设置访问令牌的有效期为2小时，刷新令牌的有效期为3天。
     @Bean(name="authorizationServerTokenServicesCustom")
     public AuthorizationServerTokenServices tokenService() {
         DefaultTokenServices service = new DefaultTokenServices();

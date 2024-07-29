@@ -33,6 +33,9 @@ import javax.annotation.Resource;
  private AuthenticationManager authenticationManager;
 
   //客户端详情服务
+ //用来配置客户端详情服务（ClientDetailsService），
+  //随便一个客户端都可以随便接入到它的认证服务吗？答案是否定的，服务提供商会给批准接入的客户端一个身份，
+  //用于接入时的凭据，有客户端标识和客户端秘钥，在这里配置批准接入的客户端的详细信息。
   @Override
   public void configure(ClientDetailsServiceConfigurer clients)
           throws Exception {
@@ -50,7 +53,7 @@ import javax.annotation.Resource;
   }
 
 
-  //令牌端点的访问配置
+  //令牌端点的访问配置，。。用来颁发令牌
   @Override
   public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
    endpoints

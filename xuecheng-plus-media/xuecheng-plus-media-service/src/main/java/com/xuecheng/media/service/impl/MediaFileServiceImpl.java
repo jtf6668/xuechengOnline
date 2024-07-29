@@ -270,14 +270,13 @@ public class MediaFileServiceImpl implements MediaFileService {
     @Override
     public RestResponse<Boolean> checkFile(String fileMd5) {
         //先查询是否在数据库中
-        //先查询数据库
         MediaFiles mediaFiles = mediaFilesMapper.selectById(fileMd5);
-        if(mediaFiles!=null){
+        if(mediaFiles!=null){//如果数据库存在再查询 minio
             //桶
             String bucket = mediaFiles.getBucket();
             //objectname
             String filePath = mediaFiles.getFilePath();
-            //如果数据库存在再查询 minio
+
             GetObjectArgs getObjectArgs = GetObjectArgs.builder()
                     .bucket("mediafiles")
                     .object(filePath)

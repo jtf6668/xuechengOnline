@@ -37,6 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
 
     @Bean
+    //在用户注册时，对用户输入的密码进行编码后存储到数据库中；在用户登录时，对用户输入的密码进行编码后与数据库中的密码进行比对验证（DaoAuthenticationProvider）。
     public PasswordEncoder passwordEncoder() {
 //        //密码为明文方式
 //        return NoOpPasswordEncoder.getInstance();
@@ -66,6 +67,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(daoAuthenticationProviderCustom);
+        auth.authenticationProvider(daoAuthenticationProviderCustom);//指定daoAuthenticationProviderCustom
     }
 }

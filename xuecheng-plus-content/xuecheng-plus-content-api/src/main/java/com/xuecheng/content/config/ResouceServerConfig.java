@@ -16,7 +16,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
  * @version 1.0
  */
  @Configuration
- @EnableResourceServer
+ @EnableResourceServer//启用了资源服务器功能
+ //表示启用全局方法级安全性，支持 Spring Security 的 @Secured 和 @PreAuthorize 注解。
  @EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)
  public class ResouceServerConfig extends ResourceServerConfigurerAdapter {
 
@@ -25,7 +26,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
   public static final String RESOURCE_ID = "xuecheng-plus";
 
   @Autowired
-  TokenStore tokenStore;
+  TokenStore tokenStore;//资源服务器将使用这个 TokenStore 进行令牌验证。
 
   @Override
   public void configure(ResourceServerSecurityConfigurer resources) {
@@ -38,6 +39,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 
  @Override
  public void configure(HttpSecurity http) throws Exception {
+   //配置了资源服务器的 HTTP 安全性。在这里，禁用了 CSRF 防护，设定了请求授权规则。
+  // antMatchers("/r/**","/course/**").authenticated()表示所有以 /r/ 或 /course/ 开头的请求需要经过认证才能访问，其他所有请求允许匿名访问。
   http.csrf().disable()
           .authorizeRequests()
                 .antMatchers("/r/**","/course/**").authenticated()//所有/r/**的请求必须认证通过

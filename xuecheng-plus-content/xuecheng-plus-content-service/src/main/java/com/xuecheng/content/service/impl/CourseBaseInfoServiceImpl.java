@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
+import com.xuecheng.base.utils.JsonUtil;
 import com.xuecheng.content.mapper.CourseBaseMapper;
 import com.xuecheng.content.mapper.CourseCategoryMapper;
 import com.xuecheng.content.mapper.CourseMarketMapper;
@@ -20,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +47,8 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     @Autowired
     CourseCategoryMapper courseCategoryMapper;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public PageResult<CourseBase> queryCourseBaseList(PageParams pageParams, QueryCourseParamsDto courseParamsDto) {
@@ -117,7 +122,12 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
     //查询完整的课程信息，包括基本信息和营销信息
     public CourseBaseInfoDto getCourseBaseInfo(Long courseId){
-
+        //在redis中查询
+        String key = "cache:course:" + courseId;
+        String redisResult = stringRedisTemplate.opsForValue().get(key);
+        if(StringUtils.isNotBlank(redisResult)){
+            //如果返回结果不为空，就直接把redis中的json字符串转成对象后返回，否则从数据库中查
+        }
         //从课程基本信息表查询
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
         if(courseBase==null){
@@ -140,6 +150,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         CourseCategory courseCategoryByMt = courseCategoryMapper.selectById(courseBase.getMt());
         courseBaseInfoDto.setMtName(courseCategoryByMt.getName());
 
+        //查完之后，向redis中写入信息
         return courseBaseInfoDto;
 
     }
